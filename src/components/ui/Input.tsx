@@ -1,9 +1,11 @@
 import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
+
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
 }
+
 
 export function Input({ label, error, className = '', ...props }: InputProps) {
   return (
@@ -15,9 +17,11 @@ export function Input({ label, error, className = '', ...props }: InputProps) {
   );
 }
 
+
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
 }
+
 
 export function Textarea({ label, className = '', ...props }: TextareaProps) {
   return (
@@ -27,3 +31,4 @@ export function Textarea({ label, className = '', ...props }: TextareaProps) {
     </div>
   );
 }
+

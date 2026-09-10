@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+
 export function Checkbox({ checked, onChange, className = '' }: { checked: boolean; onChange: () => void; className?: string }) {
   return (
     <button
@@ -19,6 +20,7 @@ export function Checkbox({ checked, onChange, className = '' }: { checked: boole
   );
 }
 
+
 export function Spinner({ className = '' }: { className?: string }) {
   return (
     <svg className={`animate-spin ${className}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -27,6 +29,7 @@ export function Spinner({ className = '' }: { className?: string }) {
     </svg>
   );
 }
+
 
 export function EmptyState({ icon, title, message, action }: { icon: React.ReactNode; title: string; message: string; action?: React.ReactNode }) {
   return (
@@ -41,6 +44,7 @@ export function EmptyState({ icon, title, message, action }: { icon: React.React
   );
 }
 
+
 export function ProgressBar({ value, max = 100, className = '' }: { value: number; max?: number; className?: string }) {
   const [width, setWidth] = useState(0);
   useEffect(() => {
@@ -51,8 +55,3 @@ export function ProgressBar({ value, max = 100, className = '' }: { value: numbe
     <div className={`h-2 bg-slate-200 dark:bg-[#1c1c1c] rounded-full overflow-hidden ${className}`}>
       <div
         className="h-full bg-green-600 rounded-full transition-all duration-500 ease-out"
-        style={{ width: `${width}%` }}
-      />
-    </div>
-  );
-}

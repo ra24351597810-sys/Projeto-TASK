@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 
+
 interface ModalProps {
   open: boolean;
   onClose: () => void;
@@ -9,12 +10,14 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
+
 const SIZES = {
   sm: 'max-w-md',
   md: 'max-w-lg',
   lg: 'max-w-2xl',
   xl: 'max-w-4xl',
 };
+
 
 export function Modal({ open, onClose, title, children, size = 'md' }: ModalProps) {
   useEffect(() => {
@@ -31,7 +34,9 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
     }
   }, [open, onClose]);
 
+
   if (!open) return null;
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
@@ -50,3 +55,4 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
     </div>
   );
 }
+

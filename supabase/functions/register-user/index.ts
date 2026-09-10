@@ -1,10 +1,12 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey',
 };
+
 
 const supabaseAdmin = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -12,8 +14,10 @@ const supabaseAdmin = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } },
 );
 
+
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const FROM_EMAIL = 'TaskFlow <onboarding@resend.dev>';
+
 
 function jsonResponse(body: Record<string, string>, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -21,6 +25,7 @@ function jsonResponse(body: Record<string, string>, status = 200) {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 }
+
 
 function generate6DigitCode(): string {
   const bytes = new Uint8Array(6);
@@ -32,11 +37,13 @@ function generate6DigitCode(): string {
   return code;
 }
 
-async function sendVerificationEmail(email: string, code: string): Promise<boolean> {
+
+async function sendVerificationEmail(email: string, code: string): Promise<{ ok: boolean; error: string }> {
   if (!RESEND_API_KEY) {
     console.error('RESEND_API_KEY not configured');
-    return false;
+    return { ok: false, error: 'RESEND_API_KEY not configured' };
   }
+
 
   const html = `<!DOCTYPE html>
 <html>
@@ -52,119 +59,3 @@ async function sendVerificationEmail(email: string, code: string): Promise<boole
         Use o código abaixo para concluir seu cadastro no TaskFlow. Este código expira em 10 minutos.
       </p>
       <div style="background:#1a1a1a;border:1px solid #27272a;border-radius:12px;padding:24px;text-align:center;margin:0 0 24px 0;">
-        <span style="color:#34d399;font-size:42px;font-weight:bold;letter-spacing:12px;">${code}</span>
-      </div>
-      <p style="color:#a1a1aa;font-size:14px;line-height:1.5;margin:0;">
-        Se você não criou uma conta no TaskFlow, pode ignorar este e-mail.
-      </p>
-    </div>
-    <div style="padding:16px 32px 24px;border-top:1px solid #222;">
-      <p style="color:#52525b;font-size:12px;margin:0;text-align:center;">
-        TaskFlow - Gestão inteligente de tarefas
-      </p>
-    </div>
-  </div>
-</body>
-</html>`;
-
-  const textBody = `TaskFlow\n\nSeu código de verificação é: ${code}\n\nDigite este código na tela de verificação do TaskFlow para concluir seu cadastro.\n\nEste código expira em 10 minutos.\n\nSe você não criou uma conta no TaskFlow, pode ignorar este e-mail.`;
-
-  try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: [email],
-        subject: 'Seu código de verificação do TaskFlow',
-        html,
-        text: textBody,
-      }),
-    });
-    if (!res.ok) {
-      const errBody = await res.text();
-      console.error('Resend error:', res.status, errBody);
-    }
-    return res.ok;
-  } catch (err) {
-    console.error('Resend fetch failed:', err);
-    return false;
-  }
-}
-
-async function generateAndStoreOtp(email: string): Promise<string | null> {
-  // Invalidate all previous unused codes for this email
-  await supabaseAdmin
-    .from('otp_codes')
-    .update({ used: true })
-    .eq('email', email)
-    .eq('used', false);
-
-  const code = generate6DigitCode();
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-
-  const { error } = await supabaseAdmin.from('otp_codes').insert({
-    email,
-    code,
-    expires_at: expiresAt,
-  });
-
-  if (error) {
-    console.error('Failed to store OTP:', error.message);
-    return null;
-  }
-
-  return code;
-}
-
-Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 200, headers: corsHeaders });
-  }
-
-  if (req.method !== 'POST') {
-    return jsonResponse({ error: 'Método não permitido.' }, 405);
-  }
-
-  try {
-    const body = await req.json();
-    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
-    const password = typeof body.password === 'string' ? body.password : '';
-    const name = typeof body.name === 'string' ? body.name.trim() : '';
-
-    if (!email || !password || !name || password.length < 6 || name.length > 120) {
-      return jsonResponse({ error: 'Dados de cadastro inválidos.' }, 400);
-    }
-
-    const { error: createError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: false,
-      user_metadata: { name },
-    });
-
-    if (createError) {
-      if (createError.message.includes('already been registered') || createError.message.includes('already registered')) {
-        return jsonResponse({ error: 'Este e-mail já está cadastrado.' }, 409);
-      }
-      return jsonResponse({ error: 'Não foi possível criar a conta.' }, 400);
-    }
-
-    const code = await generateAndStoreOtp(email);
-    if (!code) {
-      return jsonResponse({ error: 'Não foi possível gerar o código de verificação.' }, 500);
-    }
-
-    const sent = await sendVerificationEmail(email, code);
-    if (!sent) {
-      return jsonResponse({ error: 'Não foi possível enviar o código de verificação.' }, 500);
-    }
-
-    return jsonResponse({ ok: 'true' });
-  } catch {
-    return jsonResponse({ error: 'Não foi possível criar a conta.' }, 400);
-  }
-});

@@ -1,10 +1,12 @@
 import { LayoutDashboard, Sun, ListTodo, CalendarDays, BarChart3 } from 'lucide-react';
 import type { Page } from './Sidebar';
 
+
 interface BottomNavProps {
   current: Page;
   onNavigate: (page: Page) => void;
 }
+
 
 const ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'dashboard', label: 'Visão Geral', icon: LayoutDashboard },
@@ -13,6 +15,7 @@ const ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'calendar', label: 'Agenda', icon: CalendarDays },
   { id: 'analytics', label: 'Análises', icon: BarChart3 },
 ];
+
 
 export function BottomNav({ current, onNavigate }: BottomNavProps) {
   return (
@@ -38,3 +41,4 @@ export function BottomNav({ current, onNavigate }: BottomNavProps) {
     </nav>
   );
 }
+

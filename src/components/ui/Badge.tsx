@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { PRIORITY_COLORS, type Priority } from '@/types';
 
+
 export function PriorityBadge({ priority }: { priority: Priority }) {
   const c = PRIORITY_COLORS[priority];
   const labels: Record<Priority, string> = { baixa: 'Baixa', media: 'Média', alta: 'Alta', urgente: 'Urgente' };
@@ -11,6 +12,7 @@ export function PriorityBadge({ priority }: { priority: Priority }) {
     </span>
   );
 }
+
 
 export function Badge({ children, color = 'slate' }: { children: ReactNode; color?: string }) {
   const colors: Record<string, string> = {
@@ -24,3 +26,4 @@ export function Badge({ children, color = 'slate' }: { children: ReactNode; colo
   };
   return <span className={`badge ${colors[color] ?? colors.slate}`}>{children}</span>;
 }
+

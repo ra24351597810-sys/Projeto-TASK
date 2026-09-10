@@ -1,8 +1,10 @@
 import type { SelectHTMLAttributes } from 'react';
 
+
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
 }
+
 
 export function Select({ label, children, className = '', ...props }: SelectProps) {
   return (
@@ -14,3 +16,4 @@ export function Select({ label, children, className = '', ...props }: SelectProp
     </div>
   );
 }
+

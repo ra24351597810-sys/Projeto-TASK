@@ -3,6 +3,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useTask } from '@/contexts/TaskContext';
 import type { Page } from './Sidebar';
 
+
 interface TopBarProps {
   title: string;
   onMenu?: () => void;
@@ -10,10 +11,12 @@ interface TopBarProps {
   onNewTask: () => void;
 }
 
+
 export function TopBar({ title, onMenu, onNavigate, onNewTask }: TopBarProps) {
   const { theme, toggleTheme } = useTheme();
   const { notifications } = useTask();
   const unreadCount = notifications.filter((n) => !n.read).length;
+
 
   return (
     <header className="sticky top-0 z-30 glass border-b border-slate-200 dark:border-[#2a2a2a]">
@@ -24,6 +27,7 @@ export function TopBar({ title, onMenu, onNavigate, onNewTask }: TopBarProps) {
           </button>
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h2>
         </div>
+
 
         <div className="flex items-center gap-1.5">
           <button
@@ -51,3 +55,4 @@ export function TopBar({ title, onMenu, onNavigate, onNewTask }: TopBarProps) {
     </header>
   );
 }
+

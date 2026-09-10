@@ -1,9 +1,11 @@
 /*
 # Create otp_codes table for 6-digit email verification
 
+
 ## Overview
 Replaces the Supabase generateLink-based OTP system with a custom 6-digit code system.
 Codes are stored in the database with expiration, attempt limits, and invalidation on resend.
+
 
 ## New Tables
 ### `otp_codes`
@@ -16,10 +18,12 @@ Codes are stored in the database with expiration, attempt limits, and invalidati
 - `used` (boolean, default false) - Whether the code has been successfully used
 - `created_at` (timestamptz, default now())
 
+
 ## Security
 - RLS enabled. Only the server (service role) reads/writes this table.
 - No policies for anon or authenticated roles — the table is server-only.
 */
+
 
 CREATE TABLE IF NOT EXISTS otp_codes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -32,10 +36,14 @@ CREATE TABLE IF NOT EXISTS otp_codes (
   created_at timestamptz DEFAULT now()
 );
 
+
 ALTER TABLE otp_codes ENABLE ROW LEVEL SECURITY;
+
 
 -- No policies: this table is only accessed via the service role key in edge functions.
 -- The anon and authenticated roles get no access.
 
+
 CREATE INDEX IF NOT EXISTS idx_otp_codes_email ON otp_codes(email);
 CREATE INDEX IF NOT EXISTS idx_otp_codes_expires_at ON otp_codes(expires_at);
+

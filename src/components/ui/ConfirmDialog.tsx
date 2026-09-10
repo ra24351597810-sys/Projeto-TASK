@@ -1,6 +1,7 @@
 import { Modal } from './Modal';
 import { AlertTriangle } from 'lucide-react';
 
+
 interface ConfirmDialogProps {
   open: boolean;
   onClose: () => void;
@@ -10,6 +11,7 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   danger?: boolean;
 }
+
 
 export function ConfirmDialog({ open, onClose, onConfirm, title, message, confirmLabel = 'Confirmar', danger }: ConfirmDialogProps) {
   return (
@@ -35,3 +37,4 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
     </Modal>
   );
 }
+

@@ -3,7 +3,8 @@
 
 
 ## Overview
-Creates the complete schema for a multi-user Smart Task Manager application with Brazilian Portuguese localization. Each user has their own private task data isolated via Row Level Security.
+Creates the complete schema for a multi-user Smart Task Manager application with Brazilian Portuguese localization.
+Each user has their own private task data isolated via Row Level Security.
 
 
 ## New Tables
@@ -12,7 +13,7 @@ Creates the complete schema for a multi-user Smart Task Manager application with
 ### 1. `categories`
 - `id` (uuid, primary key)
 - `user_id` (uuid, references auth.users, defaults to authenticated user)
-- `name` (text, not null) - Category name in Portuguese
+- `name` (text, not null) - Category name
 - `color` (text, not null) - Hex color for visual identification
 - `icon` (text) - Lucide icon name
 - `is_default` (boolean, default false) - Whether it's a built-in category
