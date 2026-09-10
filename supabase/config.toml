@@ -1,0 +1,8 @@
+[functions.register-user]
+verify_jwt = false
+
+[functions.resend-code]
+verify_jwt = false
+
+[functions.verify-code]
+verify_jwt = false
