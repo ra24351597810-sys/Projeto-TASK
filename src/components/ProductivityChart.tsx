@@ -2,15 +2,12 @@ import { useMemo } from 'react';
 import { useTask } from '@/contexts/TaskContext';
 import { todayString } from '@/lib/date';
 
-
 export function ProductivityChart() {
   const { tasks } = useTask();
-
 
   const data = useMemo(() => {
     const days: { label: string; date: string; completed: number; created: number }[] = [];
     const weekdaysShort = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
-
 
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
@@ -24,7 +21,6 @@ export function ProductivityChart() {
       });
     }
 
-
     tasks.forEach((task) => {
       if (task.completed_at) {
         const completedDate = task.completed_at.split('T')[0];
@@ -36,14 +32,11 @@ export function ProductivityChart() {
       if (day) day.created++;
     });
 
-
     return days;
   }, [tasks]);
 
-
   const maxVal = Math.max(...data.map((d) => Math.max(d.completed, d.created)), 1);
   const today = todayString();
-
 
   return (
     <div className="card p-5">
@@ -64,5 +57,36 @@ export function ProductivityChart() {
         </div>
       </div>
 
-
       <div className="flex items-end justify-between gap-2 h-40">
+        {data.map((day) => {
+          const completedHeight = (day.completed / maxVal) * 100;
+          const createdHeight = (day.created / maxVal) * 100;
+          const isToday = day.date === today;
+          return (
+            <div key={day.date} className="flex-1 flex flex-col items-center gap-1.5 group">
+              <div className="w-full flex items-end justify-center gap-1 h-32 relative">
+                <div
+                  className="w-1/3 max-w-3 rounded-t-md bg-green-500 hover:bg-green-600 transition-all duration-500 relative"
+                  style={{ height: `${completedHeight}%` }}
+                >
+                  {day.completed > 0 && (
+                    <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-green-600 dark:text-green-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {day.completed}
+                    </span>
+                  )}
+                </div>
+                <div
+                  className="w-1/3 max-w-3 rounded-t-md bg-slate-300 dark:bg-[#303030] hover:bg-slate-400 dark:hover:bg-[#3a3a3a] transition-all duration-500"
+                  style={{ height: `${createdHeight}%` }}
+                />
+              </div>
+              <span className={`text-[10px] font-medium ${isToday ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500'}`}>
+                {day.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

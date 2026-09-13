@@ -1,9 +1,7 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 import { CheckCircle2, AlertCircle, Info, XCircle, X } from 'lucide-react';
 
-
 type ToastType = 'success' | 'error' | 'info' | 'warning';
-
 
 interface Toast {
   id: string;
@@ -11,14 +9,11 @@ interface Toast {
   message: string;
 }
 
-
 interface ToastContextValue {
   showToast: (message: string, type?: ToastType) => void;
 }
 
-
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
-
 
 const TOAST_CONFIG: Record<ToastType, { icon: typeof CheckCircle2; classes: string }> = {
   success: { icon: CheckCircle2, classes: 'bg-emerald-50 dark:bg-emerald-900/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200' },
@@ -27,10 +22,8 @@ const TOAST_CONFIG: Record<ToastType, { icon: typeof CheckCircle2; classes: stri
   warning: { icon: AlertCircle, classes: 'bg-amber-50 dark:bg-amber-900/40 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200' },
 };
 
-
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
-
 
   const showToast = useCallback((message: string, type: ToastType = 'success') => {
     const id = crypto.randomUUID();
@@ -40,9 +33,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     }, 4000);
   }, []);
 
-
   const dismiss = (id: string) => setToasts((prev) => prev.filter((t) => t.id !== id));
-
 
   return (
     <ToastContext.Provider value={{ showToast }}>
@@ -59,3 +50,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <Icon className="h-5 w-5 shrink-0" />
               <span className="text-sm font-medium flex-1">{toast.message}</span>
               <button onClick={() => dismiss(toast.id)} className="shrink-0 opacity-60 hover:opacity-100 transition-opacity">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </ToastContext.Provider>
+  );
+}
+
+export function useToast() {
+  const ctx = useContext(ToastContext);
+  if (!ctx) throw new Error('useToast must be used within ToastProvider');
+  return ctx;
+}

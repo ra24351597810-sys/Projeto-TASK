@@ -1,9 +1,7 @@
 import { LayoutDashboard, ListTodo, CalendarDays, Sun, BarChart3, FolderKanban, Bell, Settings, Sparkles, CheckSquare } from 'lucide-react';
 import { useTask } from '@/contexts/TaskContext';
 
-
 export type Page = 'dashboard' | 'tasks' | 'myday' | 'calendar' | 'analytics' | 'categories' | 'notifications' | 'settings';
-
 
 interface SidebarProps {
   current: Page;
@@ -11,7 +9,6 @@ interface SidebarProps {
   onOpenAssistant: () => void;
   onNewTask: () => void;
 }
-
 
 const NAV_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'dashboard', label: 'Visão Geral', icon: LayoutDashboard },
@@ -24,11 +21,9 @@ const NAV_ITEMS: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'settings', label: 'Configurações', icon: Settings },
 ];
 
-
 export function Sidebar({ current, onNavigate, onOpenAssistant, onNewTask }: SidebarProps) {
   const { notifications } = useTask();
   const unreadCount = notifications.filter((n) => !n.read).length;
-
 
   return (
     <aside className="hidden lg:flex flex-col w-64 h-screen sticky top-0 border-r border-slate-200 dark:border-[#2a2a2a] bg-white dark:bg-[#0b0b0b]">
@@ -43,14 +38,12 @@ export function Sidebar({ current, onNavigate, onOpenAssistant, onNewTask }: Sid
         </div>
       </div>
 
-
       {/* New Task Button */}
       <div className="px-4 pb-4">
         <button onClick={onNewTask} className="btn-primary w-full">
           <span className="text-lg leading-none">+</span> Nova Tarefa
         </button>
       </div>
-
 
       {/* Navigation */}
       <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
@@ -61,3 +54,32 @@ export function Sidebar({ current, onNavigate, onOpenAssistant, onNewTask }: Sid
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                active
+                  ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#242424]'
+              }`}
+            >
+              <Icon className="h-4.5 w-4.5 shrink-0" />
+              <span className="flex-1 text-left">{item.label}</span>
+              {item.id === 'notifications' && unreadCount > 0 && (
+                <span className="badge bg-red-500 text-white text-[10px] px-1.5 py-0">{unreadCount}</span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* AI Assistant */}
+      <div className="p-3">
+        <button
+          onClick={onOpenAssistant}
+          className="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 text-white text-sm font-medium hover:shadow-lg transition-all"
+        >
+          <Sparkles className="h-4.5 w-4.5" />
+          Assistente IA
+        </button>
+      </div>
+    </aside>
+  );
+}
